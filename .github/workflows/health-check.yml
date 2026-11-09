@@ -1,0 +1,17 @@
+name: health-check
+on:
+  schedule:
+    - cron: "41 4 * * 1"   # 每周一全链路巡检
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Run health checks (unset URLs are skipped)
+        env:
+          WORKER_URL: ${{ vars.WORKER_URL }}
+          CLOADY_APP_URL: ${{ vars.CLOADY_APP_URL }}
+        run: python scripts/health_check.py
